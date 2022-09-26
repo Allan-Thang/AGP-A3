@@ -1,0 +1,40 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-AdvGamesProgramming.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\AdvGamesProgrammingEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AdvGamesProgramming.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AdvGamesProgrammingGameModeBase.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AIManager.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\DungeonGenerator.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\EnemyCharacter.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\FirstPersonAnimInstance.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\HealthComponent.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\NavigationNode.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\Pickup.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\PickupRotator.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\PlayerCharacter.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\ProcedurallyGeneratedMap.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\WeaponFiringType.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\WeaponPickup.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AdvGamesProgramming.init.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AdvGamesProgrammingGameModeBase.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\AIManager.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\DungeonGenerator.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\EnemyCharacter.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\FirstPersonAnimInstance.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\HealthComponent.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\NavigationNode.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\Pickup.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\PickupRotator.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\PlayerCharacter.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\ProcedurallyGeneratedMap.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\WeaponFiringType.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\WeaponPickup.gen.cpp.obj"
+"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\Default.rc2.res"
+/OUT:"C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\UE4Editor-AdvGamesProgramming.lib"
+/INCLUDE:IMPLEMENT_MODULE_AdvGamesProgramming
