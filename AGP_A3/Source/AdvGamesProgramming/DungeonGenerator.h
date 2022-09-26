@@ -34,11 +34,11 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere)
-	int RoomCount;
+	float RoomCount;
 	UPROPERTY(EditAnywhere)
-	int RoomSize_Max;
+	float RoomSize_Max;
 	UPROPERTY(EditAnywhere)
-	int RoomSize_Min;
+	float RoomSize_Min;
 
 	TArray<FVector> FloorTiles;
 	TArray<FRoom*> RoomsArray;
@@ -53,12 +53,14 @@ public:
 
 	void GenerateMap();
 	void MakeRoom();
-	void SpawnTiles();
 	void SplitIntoRooms(unsigned TimesToSplit);
 	void BSP_SplitRoom_Vert(FRoom* RoomToSplit);
 	void BSP_SplitRoom_Hor(FRoom* RoomToSplit);
+	void TrimRooms();
+	void SplitIntoTiles();
+	void SpawnTiles();
 	void DebugFunction();
 
 private:
-	int MapSize;
+	float MapSize;
 };
