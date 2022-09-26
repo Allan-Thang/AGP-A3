@@ -17,6 +17,7 @@ void EmptyLinkFunctionForGeneratedCodeDungeonGenerator() {}
 	ADVGAMESPROGRAMMING_API UClass* Z_Construct_UClass_ADungeonGenerator();
 	ENGINE_API UClass* Z_Construct_UClass_AActor();
 	UPackage* Z_Construct_UPackage__Script_AdvGamesProgramming();
+	ENGINE_API UClass* Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister();
 // End Cross Module References
 	void ADungeonGenerator::StaticRegisterNativesADungeonGenerator()
 	{
@@ -31,6 +32,23 @@ void EmptyLinkFunctionForGeneratedCodeDungeonGenerator() {}
 #if WITH_METADATA
 		static const UE4CodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_RoomCount_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FUnsizedIntPropertyParams NewProp_RoomCount;
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_RoomSize_Max_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FUnsizedIntPropertyParams NewProp_RoomSize_Max;
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_RoomSize_Min_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FUnsizedIntPropertyParams NewProp_RoomSize_Min;
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_MeshComponent_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_MeshComponent;
+		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UE4CodeGen_Private::FClassParams ClassParams;
 	};
@@ -44,6 +62,41 @@ void EmptyLinkFunctionForGeneratedCodeDungeonGenerator() {}
 		{ "ModuleRelativePath", "DungeonGenerator.h" },
 	};
 #endif
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomCount_MetaData[] = {
+		{ "Category", "DungeonGenerator" },
+		{ "ModuleRelativePath", "DungeonGenerator.h" },
+	};
+#endif
+	const UE4CodeGen_Private::FUnsizedIntPropertyParams Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomCount = { "RoomCount", nullptr, (EPropertyFlags)0x0010000000000001, UE4CodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ADungeonGenerator, RoomCount), METADATA_PARAMS(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomCount_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomCount_MetaData)) };
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Max_MetaData[] = {
+		{ "Category", "DungeonGenerator" },
+		{ "ModuleRelativePath", "DungeonGenerator.h" },
+	};
+#endif
+	const UE4CodeGen_Private::FUnsizedIntPropertyParams Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Max = { "RoomSize_Max", nullptr, (EPropertyFlags)0x0010000000000001, UE4CodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ADungeonGenerator, RoomSize_Max), METADATA_PARAMS(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Max_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Max_MetaData)) };
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Min_MetaData[] = {
+		{ "Category", "DungeonGenerator" },
+		{ "ModuleRelativePath", "DungeonGenerator.h" },
+	};
+#endif
+	const UE4CodeGen_Private::FUnsizedIntPropertyParams Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Min = { "RoomSize_Min", nullptr, (EPropertyFlags)0x0010000000000001, UE4CodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ADungeonGenerator, RoomSize_Min), METADATA_PARAMS(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Min_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Min_MetaData)) };
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_MeshComponent_MetaData[] = {
+		{ "Category", "DungeonGenerator" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "DungeonGenerator.h" },
+	};
+#endif
+	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_MeshComponent = { "MeshComponent", nullptr, (EPropertyFlags)0x00100000000a0009, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ADungeonGenerator, MeshComponent), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_MeshComponent_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_MeshComponent_MetaData)) };
+	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ADungeonGenerator_Statics::PropPointers[] = {
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomCount,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Max,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_RoomSize_Min,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ADungeonGenerator_Statics::NewProp_MeshComponent,
+	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ADungeonGenerator_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ADungeonGenerator>::IsAbstract,
 	};
@@ -53,11 +106,11 @@ void EmptyLinkFunctionForGeneratedCodeDungeonGenerator() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_ADungeonGenerator_Statics::PropPointers,
 		nullptr,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
-		0,
+		UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::PropPointers),
 		0,
 		0x009000A4u,
 		METADATA_PARAMS(Z_Construct_UClass_ADungeonGenerator_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_ADungeonGenerator_Statics::Class_MetaDataParams))
@@ -71,7 +124,7 @@ void EmptyLinkFunctionForGeneratedCodeDungeonGenerator() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(ADungeonGenerator, 3555415890);
+	IMPLEMENT_CLASS(ADungeonGenerator, 2695871642);
 	template<> ADVGAMESPROGRAMMING_API UClass* StaticClass<ADungeonGenerator>()
 	{
 		return ADungeonGenerator::StaticClass();

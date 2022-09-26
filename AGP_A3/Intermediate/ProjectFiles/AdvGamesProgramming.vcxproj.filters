@@ -3,7 +3,7 @@
   <ItemGroup>
     <None Include="..\..\AdvGamesProgramming.uproject" />
     <Filter Include="Source">
-      <UniqueIdentifier>{ACDD92B3-3396-4734-8E9C-25F1447F52FB}</UniqueIdentifier>
+      <UniqueIdentifier>{1614FAD1-CEC3-4B6A-B181-14339D269FD4}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Source\AdvGamesProgramming.Target.cs">
       <Filter>Source</Filter>
@@ -12,7 +12,7 @@
       <Filter>Source</Filter>
     </None>
     <Filter Include="Config">
-      <UniqueIdentifier>{6A19E822-B4AA-41C7-B112-1D2D25D20AC6}</UniqueIdentifier>
+      <UniqueIdentifier>{23C1F25F-8CF2-49C5-93EC-AE631064DC0F}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\DefaultEditor.ini">
       <Filter>Config</Filter>
@@ -27,7 +27,7 @@
       <Filter>Config</Filter>
     </None>
     <Filter Include="Source\AdvGamesProgramming">
-      <UniqueIdentifier>{DB839DDD-9717-4767-BE80-E5B399D40304}</UniqueIdentifier>
+      <UniqueIdentifier>{1BBD0AE0-9827-413C-9AEC-41BA8A0A8395}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Source\AdvGamesProgramming\AdvGamesProgramming.Build.cs">
       <Filter>Source\AdvGamesProgramming</Filter>
@@ -102,12 +102,6 @@
       <Filter>Source\AdvGamesProgramming</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\AdvGamesProgramming\ProcedurallyGeneratedMap.h">
-      <Filter>Source\AdvGamesProgramming</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\Source\AdvGamesProgramming\Room.cpp">
-      <Filter>Source\AdvGamesProgramming</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\Source\AdvGamesProgramming\Room.h">
       <Filter>Source\AdvGamesProgramming</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\AdvGamesProgramming\WeaponFiringType.cpp">
