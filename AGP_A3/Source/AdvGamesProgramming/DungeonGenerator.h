@@ -59,6 +59,7 @@ public:
 	void TrimRooms();
 	void SplitIntoTiles();
 	void SpawnTiles();
+	void TempSpawnTiles();
 	void DebugFunction();
 
 private:
