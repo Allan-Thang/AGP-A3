@@ -46,9 +46,10 @@ void ADungeonGenerator::BeginPlay()
 	SplitIntoRooms(RoomCount-1);
 	TrimRooms();
 	SplitIntoTiles();
+	GenerateMST(RoomsArray);
 	SpawnTiles();
-	// TempSpawnTiles();
-	// DebugFunction();
+	TempSpawnTiles();
+	DebugFunction();
 }
 
 // Called every frame
@@ -112,6 +113,7 @@ void ADungeonGenerator::BSP_SplitRoom_Vert(FRoom* RoomToSplit)
 		RoomToSplit->Child1->Parent = RoomToSplit;
 		RoomToSplit->Child1->MinPos = RoomToSplit->MinPos;
 		RoomToSplit->Child1->MaxPos = RoomToSplit->MinPos + FVector(SplitAtTile * 100.0f, RoomToSplit->Height*100.0f, 0.0f);
+		RoomToSplit->Child1->MidPoint = FVector((RoomToSplit->Child1->MinPos.X + RoomToSplit->Child1->MaxPos.X)/2, (RoomToSplit->Child1->MinPos.Y + RoomToSplit->Child1->MaxPos.Y)/2, 0.0f);
 		RoomToSplit->Child1->Width = SplitAtTile;
 		RoomToSplit->Child1->Height = RoomToSplit->Height;
 
@@ -119,6 +121,7 @@ void ADungeonGenerator::BSP_SplitRoom_Vert(FRoom* RoomToSplit)
 		RoomToSplit->Child2->Parent = RoomToSplit;
 		RoomToSplit->Child2->MinPos = RoomToSplit->MinPos + FVector(SplitAtTile * 100.0f, 0.0f, 0.0f);
 		RoomToSplit->Child2->MaxPos = RoomToSplit->MaxPos;
+		RoomToSplit->Child2->MidPoint = FVector((RoomToSplit->Child2->MinPos.X + RoomToSplit->Child2->MaxPos.X)/2, (RoomToSplit->Child2->MinPos.Y + RoomToSplit->Child2->MaxPos.Y)/2, 0.0f);
 		RoomToSplit->Child2->Width = RoomToSplit->Width - SplitAtTile;
 		RoomToSplit->Child2->Height = RoomToSplit->Height;
 
@@ -139,8 +142,6 @@ void ADungeonGenerator::BSP_SplitRoom_Hor(FRoom* RoomToSplit)
 	{
 		const float SplitPercent = FMath::RandRange(1, 9);
 		const float SplitAtTile = floorf(RoomToSplit->Height * (SplitPercent/10));
-
-
 
 		RoomToSplit->Child1 = new FRoom;
 		RoomToSplit->Child1->Parent = RoomToSplit;
@@ -184,6 +185,67 @@ void ADungeonGenerator::TrimRooms()
 
 		iRoom->Width -= WidthToCut_Left + WidthToCut_Right;
 		iRoom->Height -= HeightToCut_Top + HeightToCut_Bot;
+
+		iRoom->MidPoint = FVector(iRoom->MinPos.X + iRoom->Width/2 * 100.0f, iRoom->MinPos.Y + iRoom->Height/2 * 100.0f, 0.0f);
+	}
+}
+
+void ADungeonGenerator::GenerateMST(TArray<FRoom*> Rooms)
+{
+	FRoom* StartRoom = Rooms[0];
+	// ConnectedRooms[StartRoom] = StartRoom;
+
+	FRoomPair FirstPair;
+	// Swap this later
+	// FirstPair.CameFromRoom = nullptr;
+	FRoom* ZeroRoom = new FRoom;
+	ZeroRoom->MidPoint = FVector(0.0f,0.0f,0.0f);
+	FirstPair.CameFromRoom = ZeroRoom;
+
+	FirstPair.Room = StartRoom;
+
+	ConnectedRooms.Add(FirstPair);
+	Rooms.Remove(StartRoom);
+	PopulateConnectedRooms(Rooms);
+}
+
+void ADungeonGenerator::PopulateConnectedRooms(TArray<FRoom*> Rooms)
+{
+	if (Rooms.Num() == 0) return;
+
+	FRoomPair PairToAdd;
+	PairToAdd.CameFromRoom = ConnectedRooms[0].Room;
+	PairToAdd.Room = Rooms[0];
+
+	for (FRoomPair iRoomPair : ConnectedRooms)
+	{
+		FRoom* RoomToAdd = Rooms[0];
+		for (FRoom* iRoom : Rooms)
+		{
+			if (FVector::Dist(iRoomPair.Room->MidPoint, iRoom->MidPoint) < FVector::Dist(iRoomPair.Room->MidPoint, RoomToAdd->MidPoint))
+			{
+				RoomToAdd = iRoom;
+			}
+		}
+		if (FVector::Dist( iRoomPair.Room->MidPoint, RoomToAdd->MidPoint) < FVector::Dist(PairToAdd.Room->MidPoint, PairToAdd.CameFromRoom->MidPoint))
+		{
+			PairToAdd.Room = RoomToAdd;
+			PairToAdd.CameFromRoom = iRoomPair.Room;
+		}
+	}
+
+	bool CycleCheck = false;
+	for (auto Pair : ConnectedRooms)
+	{
+		CycleCheck = Pair.Room == PairToAdd.Room;
+		if (CycleCheck) break;
+	}
+
+	if (!CycleCheck)
+	{
+		ConnectedRooms.Add(PairToAdd);
+		Rooms.Remove(PairToAdd.Room);
+		PopulateConnectedRooms(Rooms);
 	}
 }
 
@@ -220,15 +282,21 @@ void ADungeonGenerator::TempSpawnTiles()
 		DrawDebugLine(GetWorld(), iRoom->MinPos + FVector(0.0f,0.0f, 100.0f), iRoom->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Red, true, -1, 0, 10);
 		DrawDebugLine(GetWorld(), iRoom->MaxPos + FVector(0.0f,0.0f,100.0f), iRoom->MinPos + FVector(iRoom->Width*100.0f, 0.0f, 100.0f), FColor::Blue, true, -1, 0, 10);
 		DrawDebugLine(GetWorld(), iRoom->MaxPos + FVector(0.0f,0.0f,100.0f), iRoom->MinPos + FVector(0.0f, iRoom->Height*100.0f, 100.0f), FColor::Blue, true, -1, 0, 10);
-
+		DrawDebugBox(GetWorld(), iRoom->MidPoint, FVector(100.0f, 100.0f, 100.0f), FColor::Purple, true, -1, 0, 10);
 	}
 }
 
 void ADungeonGenerator::DebugFunction()
 {
 	// UE_LOG(LogTemp, Warning, TEXT("Foo"));
-	for (auto ele : RoomsArray)
+	// for (auto ele : RoomsArray)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Room 1 - Min: %s, Max: %s, Width: %f, Height: %f"), *(ele->MinPos.ToString()), *(ele->MaxPos.ToString()), ele->Width, ele->Height);
+	// }
+
+	for (auto iPair : ConnectedRooms)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Room 1 - Min: %s, Max: %s, Width: %f, Height: %f"), *(ele->MinPos.ToString()), *(ele->MaxPos.ToString()), ele->Width, ele->Height);
+		UE_LOG(LogTemp, Warning, TEXT("Pair - Room: %s, CameFrom: %s"), *iPair.Room->MidPoint.ToString(), *iPair.CameFromRoom->MidPoint.ToString());
+		DrawDebugLine(GetWorld(), iPair.Room->MidPoint + FVector(0.0f,0.0f, 100.0f), iPair.CameFromRoom->MidPoint + FVector(0.0f,0.0f,100.0f), FColor::Purple, true, -1, 0, 10);
 	}
 }

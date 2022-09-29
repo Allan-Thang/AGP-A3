@@ -19,6 +19,7 @@ public:
 	{
 		FVector MinPos;
 		FVector MaxPos;
+		FVector MidPoint;
 
 		float Width;
 		float Height;
@@ -26,6 +27,12 @@ public:
 		FRoom* Parent;
 		FRoom* Child1;
 		FRoom* Child2;
+	};
+
+	struct FRoomPair
+	{
+		FRoom* CameFromRoom;
+		FRoom* Room;
 	};
 
 protected:
@@ -42,6 +49,9 @@ public:
 
 	TArray<FVector> FloorTiles;
 	TArray<FRoom*> RoomsArray;
+	TArray<FVector> RoomCentres;
+
+	TArray<FRoomPair> ConnectedRooms;
 
 	FRoom* Map;
 
@@ -57,6 +67,8 @@ public:
 	void BSP_SplitRoom_Vert(FRoom* RoomToSplit);
 	void BSP_SplitRoom_Hor(FRoom* RoomToSplit);
 	void TrimRooms();
+	void GenerateMST(TArray<FRoom*> Rooms);
+	void PopulateConnectedRooms(TArray<FRoom*> Rooms);
 	void SplitIntoTiles();
 	void SpawnTiles();
 	void TempSpawnTiles();
