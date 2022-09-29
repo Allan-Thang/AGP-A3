@@ -69,9 +69,11 @@ public:
 	void TrimRooms();
 	void GenerateMST(TArray<FRoom*> Rooms);
 	void PopulateConnectedRooms(TArray<FRoom*> Rooms);
+	void FindOverlap(FRoom* RoomA, FRoom* RoomB);
 	void SplitIntoTiles();
 	void SpawnTiles();
 	void TempSpawnTiles();
+	float RoundToHundred(float Value);
 	void DebugFunction();
 
 private:

@@ -249,6 +249,135 @@ void ADungeonGenerator::PopulateConnectedRooms(TArray<FRoom*> Rooms)
 	}
 }
 
+void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
+{
+	/*
+	 * X1 = Lower X
+	 * X2 = Upper X
+	 * Y1 = Lower Y
+	 * Y2 = Upper Y
+	 */
+	const float RoomA_X1 = RoomA->MinPos.X;
+	const float RoomA_X2 = RoomA->MinPos.X + RoomA->Width * 100.0f;
+	const float RoomA_Y1 = RoomA->MinPos.Y;
+	const float RoomA_Y2 = RoomA->MinPos.Y + RoomA->Height * 100.0f;
+
+	const float RoomB_X1 = RoomB->MinPos.X;
+	const float RoomB_X2 = RoomB->MinPos.X + RoomB->Width * 100.0f;
+	const float RoomB_Y1 = RoomB->MinPos.Y;
+	const float RoomB_Y2 = RoomB->MinPos.Y + RoomB->Height * 100.0f;
+
+	/*  -----                -----
+	 * |  A  |              |  A  |
+	 *  -----        /       -----
+	 *    -----            -----
+	 *   |  B  |          |  B  |
+	 *    -----            -----
+	 */
+	if (RoomA_X1 < RoomB_X2 && RoomA_X2 > RoomB_X1)
+	{
+
+		/*  -----
+		 * |  A  |
+		 *  -----
+		 *    -----
+		 *   |  B  |
+		 *    -----
+		 */
+		if (RoomA_X1 < RoomB_X1 && RoomA_X2 < RoomB_X2)
+		{
+			return;
+		}
+
+		/*    -----
+		 *   |  A  |
+		 *    -----
+		 *  -----
+		 * |  B  |
+		 *  -----
+		 */
+		else if (RoomA_X1 > RoomB_X2 && RoomA_X2 > RoomB_X2)
+		{
+			return;
+		}
+
+		/*  -------
+		 * |   A   |
+		 *  -------
+		 *    ---
+		 *   | B |
+		 *    ---
+		 */
+		else if (RoomA_X1 < RoomB_X1 && RoomA_X2 > RoomB_X2)
+		{
+			return;
+		}
+
+		/*    ---
+		 *   | A |
+		 *    ---
+		 *  -------
+		 * |   B   |
+		 *  -------
+		 */
+		else
+		{
+			return;
+		}
+	}
+	/*  -----                          -----
+	 * |  A  |  -----      /   -----  |  B  |
+	 *  -----  |  B  |        |  A  |  -----
+	 *          -----          -----
+	 */
+	else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 < RoomB_Y1)
+	{
+
+		/*          -----
+		 *  -----  |  B  |
+		 * |  A  |  -----
+		 *  -----
+		 */
+		if (RoomA_Y1 < RoomB_Y1 && RoomA_Y2 < RoomB_Y2)
+		{
+
+		}
+
+		/*  -----
+		 * |  A  |  -----
+		 *  -----  |  B  |
+		 *          -----
+		 */
+		else if (RoomA_Y1 > RoomB_Y1 && RoomA_Y2 > RoomB_Y2)
+		{
+
+		}
+
+		/*  -----
+		 * |     |  -----
+		 * |  A  | |  B  |
+		 * |     |  -----
+		 *  -----
+		 */
+		else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 > RoomB_Y2)
+		{
+
+		}
+
+		/*          -----
+		 *  -----  |     |
+		 * |  A  | |  B  |
+		 *  -----  |     |
+		 *          -----
+		 */
+		else
+		{
+
+		}
+	}
+	FVector CorridorMidpoint = FVector(0.0f, 0.0f, 0.0f);
+}
+
 void ADungeonGenerator::SplitIntoTiles()
 {
 	for (FRoom* iRoom : RoomsArray)
@@ -284,6 +413,12 @@ void ADungeonGenerator::TempSpawnTiles()
 		DrawDebugLine(GetWorld(), iRoom->MaxPos + FVector(0.0f,0.0f,100.0f), iRoom->MinPos + FVector(0.0f, iRoom->Height*100.0f, 100.0f), FColor::Blue, true, -1, 0, 10);
 		DrawDebugBox(GetWorld(), iRoom->MidPoint, FVector(100.0f, 100.0f, 100.0f), FColor::Purple, true, -1, 0, 10);
 	}
+}
+
+float ADungeonGenerator::RoundToHundred(float Value)
+{
+	int Value_I = Value;
+	return ((Value_I % 100) < 50) ? Value_I - (Value_I % 100) : Value_I + (100 - Value_I % 100);
 }
 
 void ADungeonGenerator::DebugFunction()
