@@ -25,6 +25,7 @@ void ADungeonGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	MapSize = 100.0f * MapScale * RoomCount;
 	Map = new FRoom;
 
@@ -53,6 +54,9 @@ void ADungeonGenerator::BeginPlay()
 	else UE_LOG(LogTemp, Warning, TEXT("No WallGenerator"));
 	// TempSpawnTiles();
 	// DebugFunction();
+
+	APlayerCharacter* PlayerCharacter = GetWorld()->SpawnActor<APlayerCharacter>(Player, RoomsArray[0]->MidPoint + FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator);
+	PlayerCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 // Called every frame

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacter.h"
 #include "WallGenerator.h"
 #include "GameFramework/Actor.h"
 #include "DungeonGenerator.generated.h"
@@ -60,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	AWallGenerator* WallGenerator;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<APlayerCharacter> Player;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
