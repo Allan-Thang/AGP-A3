@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WallGenerator.h"
 #include "GameFramework/Actor.h"
 #include "DungeonGenerator.generated.h"
 
@@ -43,11 +44,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float RoomCount;
 	UPROPERTY(EditAnywhere)
-	float RoomSize_Max;
-	UPROPERTY(EditAnywhere)
-	float RoomSize_Min;
+	float MapScale;
 
 	TArray<FVector> FloorTiles;
+	TArray<FVector> CorridorTiles;
 	TArray<FRoom*> RoomsArray;
 	TArray<FVector> RoomCentres;
 
@@ -57,6 +57,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UInstancedStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(EditAnywhere)
+	AWallGenerator* WallGenerator;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,7 +74,7 @@ public:
 	void PopulateConnectedRooms(TArray<FRoom*> Rooms);
 	void AddCorridors(FRoom* RoomA, FRoom* RoomB);
 	TArray<FVector> SplitRoomIntoTiles(FRoom* RoomToSplit);
-	void SpawnTiles();
+	void SpawnTiles(const TArray<FVector>& Tiles);
 	void TempSpawnTiles();
 	float RoundToHundred(float Value);
 	void DebugFunction();

@@ -16,20 +16,17 @@ ADungeonGenerator::ADungeonGenerator()
 	MeshComponent->SetMobility(EComponentMobility::Static);
 	MeshComponent->SetCollisionProfileName("BlockAll");
 
-	MeshComponent->AddInstance(FTransform(FVector::ZeroVector));
-
 	RoomCount = 10.0f;
-	RoomSize_Min = 5.0f;
-	RoomSize_Max = 10.0f;
-
-	MapSize = 100.0f * RoomSize_Max * RoomCount;
-	Map = new FRoom;
+	MapScale = 10.0f;
 }
 
 // Called when the game starts or when spawned
 void ADungeonGenerator::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MapSize = 100.0f * MapScale * RoomCount;
+	Map = new FRoom;
 
 	if (Map)
 	{
@@ -38,9 +35,6 @@ void ADungeonGenerator::BeginPlay()
 		Map->Width = MapSize / 100.0f;
 		Map->Height = MapSize / 100.0f;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("MapWidth: %f, MapHeight: %f"), Map->Width, Map->Height);
-	// UE_LOG(LogTemp, Warning, TEXT("MapMaxPos: %s"), *(Map->MaxPos).ToString());
-	UE_LOG(LogTemp, Warning, TEXT("MapMaxPos: %f"), Map->MaxPos.X);
 
 	RoomsArray.Add(Map);
 	SplitIntoRooms(RoomCount-1);
@@ -50,9 +44,15 @@ void ADungeonGenerator::BeginPlay()
 		FloorTiles.Append(SplitRoomIntoTiles(RoomToSplit));
 	}
 	GenerateMST(RoomsArray);
-	SpawnTiles();
-	TempSpawnTiles();
-	DebugFunction();
+	SpawnTiles(FloorTiles);
+	// SpawnTiles(CorridorTiles);
+	if (WallGenerator)
+	{
+		WallGenerator->GenerateWalls(FloorTiles);
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("No WallGenerator"));
+	// TempSpawnTiles();
+	// DebugFunction();
 }
 
 // Called every frame
@@ -89,13 +89,10 @@ void ADungeonGenerator::SplitIntoRooms(unsigned TimesToSplit)
 		if (RoomToSplit->Width >= RoomToSplit->Height)
 		{
 			BSP_SplitRoom_Vert(RoomToSplit);
-			UE_LOG(LogTemp, Warning, TEXT("Split Vertically"));
 		}
 		else
 		{
 			BSP_SplitRoom_Hor(RoomToSplit);
-			// BSP_SplitRoom_Hor(RoomToSplit);
-			UE_LOG(LogTemp, Warning, TEXT("Split Horizontally"));
 		}
 
 		TimesToSplit--;
@@ -109,9 +106,7 @@ void ADungeonGenerator::BSP_SplitRoom_Vert(FRoom* RoomToSplit)
 	{
 		const float SplitPercent = FMath::RandRange(1, 9);
 		const float SplitAtTile = floorf(RoomToSplit->Width * (SplitPercent/10));
-		UE_LOG(LogTemp, Warning, TEXT("SplitPercent: %f"), SplitPercent);
-		// const int SplitAtTile = FMath::RandRange(2.0f, RoomToSplit->Width-2);
-		UE_LOG(LogTemp, Warning, TEXT("SplitAtTile: %f"), SplitAtTile);
+
 		RoomToSplit->Child1 = new FRoom;
 		RoomToSplit->Child1->Parent = RoomToSplit;
 		RoomToSplit->Child1->MinPos = RoomToSplit->MinPos;
@@ -128,7 +123,6 @@ void ADungeonGenerator::BSP_SplitRoom_Vert(FRoom* RoomToSplit)
 		RoomToSplit->Child2->Width = RoomToSplit->Width - SplitAtTile;
 		RoomToSplit->Child2->Height = RoomToSplit->Height;
 
-		// UE_LOG(LogTemp, Warning, TEXT("SplitAtTile: %i, RoomToSplitWidth: %f, RoomToSplitHeight: %f,"), SplitAtTile, RoomToSplit->Width, RoomToSplit->Height);
 		if (RoomsArray.Contains(RoomToSplit))
 		{
 			RoomsArray.Add(RoomToSplit->Child1);
@@ -159,7 +153,6 @@ void ADungeonGenerator::BSP_SplitRoom_Hor(FRoom* RoomToSplit)
 		RoomToSplit->Child2->MaxPos = RoomToSplit->MaxPos;
 		RoomToSplit->Child2->Width = RoomToSplit->Width;
 		RoomToSplit->Child2->Height = RoomToSplit->Height - SplitAtTile;
-		// UE_LOG(LogTemp, Warning, TEXT("SplitAtTile: %i, RoomToSplitWidth: %f, RoomToSplitHeight: %f,"), SplitAtTile, RoomToSplit->Width, RoomToSplit->Height);
 
 		if (RoomsArray.Contains(RoomToSplit))
 		{
@@ -181,10 +174,8 @@ void ADungeonGenerator::TrimRooms()
 		const float HeightToCut_Top = floorf(iRoom->Height * FMath::RandRange(10,30)/100);
 		const float HeightToCut_Bot = floorf(iRoom->Height * FMath::RandRange(10,30)/100);
 
-		// UE_LOG(LogTemp, Warning, TEXT("iRoom->MinPos: %s, iRoom->MaxPos Before: %s "), *iRoom->MinPos.ToString(), *iRoom->MaxPos.ToString());
 		iRoom->MinPos += FVector(100.0f * WidthToCut_Left, 100.0f * HeightToCut_Bot, 0.0f);
 		iRoom->MaxPos -= FVector(100.0f * WidthToCut_Right, 100.0f * HeightToCut_Top, 0.0f);
-		UE_LOG(LogTemp, Warning, TEXT("iRoom->MinPos: %s, iRoom->MaxPos: %s, Width: %f, Height: %f,"), *iRoom->MinPos.ToString(), *iRoom->MaxPos.ToString(), iRoom->Width, iRoom->Height);
 
 		iRoom->Width -= WidthToCut_Left + WidthToCut_Right;
 		iRoom->Height -= HeightToCut_Top + HeightToCut_Bot;
@@ -196,15 +187,12 @@ void ADungeonGenerator::TrimRooms()
 void ADungeonGenerator::GenerateMST(TArray<FRoom*> Rooms)
 {
 	FRoom* StartRoom = Rooms[0];
-	// ConnectedRooms[StartRoom] = StartRoom;
 
-	FRoomPair FirstPair;
-	// Swap this later
-	// FirstPair.CameFromRoom = nullptr;
 	FRoom* ZeroRoom = new FRoom;
 	ZeroRoom->MidPoint = FVector(0.0f,0.0f,0.0f);
-	FirstPair.CameFromRoom = ZeroRoom;
 
+	FRoomPair FirstPair;
+	FirstPair.CameFromRoom = ZeroRoom;
 	FirstPair.Room = StartRoom;
 
 	ConnectedRooms.Add(FirstPair);
@@ -215,7 +203,6 @@ void ADungeonGenerator::GenerateMST(TArray<FRoom*> Rooms)
 	{
 		if (iRoomPair.Room == FirstPair.Room) continue;
 		AddCorridors(iRoomPair.Room, iRoomPair.CameFromRoom);
-		UE_LOG(LogTemp, Warning, TEXT("Corridor Added"));
 	}
 }
 
@@ -307,15 +294,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		if (RoomA_X1 < RoomB_X1 && RoomA_X2 < RoomB_X2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: V1"));
-
-			const FVector CorridorStart = FVector(((RoomA_X2 + RoomB_X1)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(((RoomA_X2 + RoomB_X1)/2), CorridorEndY - 100.0f, 0.0f);
+			const FVector CorridorStart = FVector(RoundToHundred((RoomA_X2 + RoomB_X1)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(RoundToHundred((RoomA_X2 + RoomB_X1)/2), CorridorEndY - 100.0f, 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*    -----
@@ -327,14 +310,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_X1 > RoomB_X2 && RoomA_X2 > RoomB_X2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: V2"));
-			const FVector CorridorStart = FVector(((RoomA_X1 + RoomB_X2)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(((RoomA_X1 + RoomB_X2)/2), CorridorEndY - 100.0f, 0.0f);
+			const FVector CorridorStart = FVector(RoundToHundred((RoomA_X1 + RoomB_X2)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(RoundToHundred((RoomA_X1 + RoomB_X2)/2), CorridorEndY - 100.0f, 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -------
@@ -346,14 +326,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_X1 < RoomB_X1 && RoomA_X2 > RoomB_X2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: V3"));
-			const FVector CorridorStart = FVector((RoomB->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector((RoomB->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
+			const FVector CorridorStart = FVector(RoundToHundred(RoomB->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(RoundToHundred(RoomB->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*    ---
@@ -365,14 +342,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: V4"));
-			const FVector CorridorStart = FVector((RoomA->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector((RoomA->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
+			const FVector CorridorStart = FVector(RoundToHundred(RoomA->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(RoundToHundred(RoomA->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 	}
 	/*
@@ -401,14 +375,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		if (RoomA_Y1 < RoomB_Y1 && RoomA_Y2 < RoomB_Y2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: H1"));
-			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y2 + RoomB_Y1)/2) - 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y2 + RoomB_Y1)/2), 0.0f);
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomA_Y2 + RoomB_Y1)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomA_Y2 + RoomB_Y1)/2), 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -----
@@ -418,14 +389,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_Y1 > RoomB_Y1 && RoomA_Y2 > RoomB_Y2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: H2"));
-			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y1 + RoomB_Y2)/2), 0.0f);
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomA_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomA_Y1 + RoomB_Y2)/2), 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -----
@@ -436,14 +404,11 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 > RoomB_Y2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: H3"));
-			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomB_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomB_Y1 + RoomB_Y2)/2), 0.0f);
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomB_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomB_Y1 + RoomB_Y2)/2), 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*          -----
@@ -454,18 +419,15 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CType: H4"));
-			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y1 + RoomA_Y2)/2) - 100.0f, 0.0f);
-			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y1 + RoomA_Y2)/2), 0.0f);
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomA_Y1 + RoomA_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomA_Y1 + RoomA_Y2)/2), 0.0f);
 
 			Corridor->MinPos = CorridorStart;
 			Corridor->MaxPos = CorridorEnd;
-
-			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Corridor from: %s to: %s"), *Corridor->MinPos.ToString(), *Corridor->MaxPos.ToString());
-	DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
+	FloorTiles.Append(SplitRoomIntoTiles(Corridor));
+	// DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
 }
 
 TArray<FVector> ADungeonGenerator::SplitRoomIntoTiles(FRoom* RoomToSplit)
@@ -483,9 +445,9 @@ TArray<FVector> ADungeonGenerator::SplitRoomIntoTiles(FRoom* RoomToSplit)
 	return Tiles;
 }
 
-void ADungeonGenerator::SpawnTiles()
+void ADungeonGenerator::SpawnTiles(const TArray<FVector>& Tiles)
 {
-	for (FVector Tile : FloorTiles)
+	for (FVector Tile : Tiles)
 	{
 		MeshComponent->AddInstance(FTransform(Tile));
 	}
@@ -522,7 +484,7 @@ void ADungeonGenerator::DebugFunction()
 
 	for (auto iPair : ConnectedRooms)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Pair - Room: %s, CameFrom: %s"), *iPair.Room->MidPoint.ToString(), *iPair.CameFromRoom->MidPoint.ToString());
+		// UE_LOG(LogTemp, Warning, TEXT("Pair - Room: %s, CameFrom: %s"), *iPair.Room->MidPoint.ToString(), *iPair.CameFromRoom->MidPoint.ToString());
 		DrawDebugLine(GetWorld(), iPair.Room->MidPoint + FVector(0.0f,0.0f, 100.0f), iPair.CameFromRoom->MidPoint + FVector(0.0f,0.0f,100.0f), FColor::Purple, true, -1, 0, 10);
 	}
 }
