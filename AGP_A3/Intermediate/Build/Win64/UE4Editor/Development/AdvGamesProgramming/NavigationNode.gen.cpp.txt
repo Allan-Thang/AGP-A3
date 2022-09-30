@@ -1,5 +1,0 @@
-C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProgramming\Definitions.AdvGamesProgramming.h
-C:\Program Files\Epic Games\UE_4.26\Engine\Source\Runtime\CoreUObject\Public\UObject/GeneratedCppIncludes.h
-C:\Program Files\Epic Games\UE_4.26\Engine\Source\Runtime\CoreUObject\Public\UObject/MetaData.h
-C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Source\AdvGamesProgramming/NavigationNode.h
-C:\Users\Shiva\Desktop\Uni\2022 Spring (Current)\41024 Advanced Games Programming\A3\AGP-A3\AGP_A3\Intermediate\Build\Win64\UE4Editor\Inc\AdvGamesProgramming\NavigationNode.generated.h

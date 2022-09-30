@@ -109,6 +109,7 @@ void APlayerCharacter::LookUp(float Value)
 	FRotator RelativeRotation = Camera->GetRelativeRotation();
 	RelativeRotation.Yaw = 0.0f;
 	RelativeRotation.Roll = 0.0f;
+	if (Camera)
 	Camera->SetRelativeRotation(RelativeRotation);
 }
 
@@ -141,4 +142,3 @@ void APlayerCharacter::Reload()
 {
 	BlueprintReload();
 }
-
