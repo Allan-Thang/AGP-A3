@@ -45,7 +45,10 @@ void ADungeonGenerator::BeginPlay()
 	RoomsArray.Add(Map);
 	SplitIntoRooms(RoomCount-1);
 	TrimRooms();
-	SplitIntoTiles();
+	for (FRoom* RoomToSplit : RoomsArray)
+	{
+		FloorTiles.Append(SplitRoomIntoTiles(RoomToSplit));
+	}
 	GenerateMST(RoomsArray);
 	SpawnTiles();
 	TempSpawnTiles();
@@ -173,10 +176,10 @@ void ADungeonGenerator::TrimRooms()
 	for (FRoom* iRoom : RoomsArray)
 	{
 		// Get a percent 10<=n<=30 of the width/height to cut from all sides of the room;
-		const float WidthToCut_Left = ceilf(iRoom->Width * FMath::RandRange(10,30)/100);
-		const float WidthToCut_Right = ceilf(iRoom->Width * FMath::RandRange(10,30)/100);
-		const float HeightToCut_Top = ceilf(iRoom->Height * FMath::RandRange(10,30)/100);
-		const float HeightToCut_Bot = ceilf(iRoom->Height * FMath::RandRange(10,30)/100);
+		const float WidthToCut_Left = floorf(iRoom->Width * FMath::RandRange(10,30)/100);
+		const float WidthToCut_Right = floorf(iRoom->Width * FMath::RandRange(10,30)/100);
+		const float HeightToCut_Top = floorf(iRoom->Height * FMath::RandRange(10,30)/100);
+		const float HeightToCut_Bot = floorf(iRoom->Height * FMath::RandRange(10,30)/100);
 
 		// UE_LOG(LogTemp, Warning, TEXT("iRoom->MinPos: %s, iRoom->MaxPos Before: %s "), *iRoom->MinPos.ToString(), *iRoom->MaxPos.ToString());
 		iRoom->MinPos += FVector(100.0f * WidthToCut_Left, 100.0f * HeightToCut_Bot, 0.0f);
@@ -207,6 +210,13 @@ void ADungeonGenerator::GenerateMST(TArray<FRoom*> Rooms)
 	ConnectedRooms.Add(FirstPair);
 	Rooms.Remove(StartRoom);
 	PopulateConnectedRooms(Rooms);
+
+	for (FRoomPair iRoomPair : ConnectedRooms)
+	{
+		if (iRoomPair.Room == FirstPair.Room) continue;
+		AddCorridors(iRoomPair.Room, iRoomPair.CameFromRoom);
+		UE_LOG(LogTemp, Warning, TEXT("Corridor Added"));
+	}
 }
 
 void ADungeonGenerator::PopulateConnectedRooms(TArray<FRoom*> Rooms)
@@ -249,7 +259,7 @@ void ADungeonGenerator::PopulateConnectedRooms(TArray<FRoom*> Rooms)
 	}
 }
 
-void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
+void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 {
 	/*
 	 * X1 = Lower X
@@ -267,15 +277,26 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 	const float RoomB_Y1 = RoomB->MinPos.Y;
 	const float RoomB_Y2 = RoomB->MinPos.Y + RoomB->Height * 100.0f;
 
-	/*  -----                -----
-	 * |  A  |              |  A  |
-	 *  -----        /       -----
-	 *    -----            -----
-	 *   |  B  |          |  B  |
-	 *    -----            -----
+	FRoom* Corridor = new FRoom;
+
+	/*
+	 * Vertical Corridor
 	 */
 	if (RoomA_X1 < RoomB_X2 && RoomA_X2 > RoomB_X1)
 	{
+		float CorridorStartY;
+		float CorridorEndY;
+
+		if (RoomA_Y1 > RoomB_Y1) //A is above B
+		{
+			CorridorStartY = RoomB_Y2;
+			CorridorEndY = RoomA_Y1;
+		}
+		else //B is above A
+		{
+			CorridorStartY = RoomA_Y2;
+			CorridorEndY = RoomB_Y1;
+		}
 
 		/*  -----
 		 * |  A  |
@@ -286,7 +307,15 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		if (RoomA_X1 < RoomB_X1 && RoomA_X2 < RoomB_X2)
 		{
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("CType: V1"));
+
+			const FVector CorridorStart = FVector(((RoomA_X2 + RoomB_X1)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(((RoomA_X2 + RoomB_X1)/2), CorridorEndY - 100.0f, 0.0f);
+
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*    -----
@@ -298,7 +327,14 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_X1 > RoomB_X2 && RoomA_X2 > RoomB_X2)
 		{
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("CType: V2"));
+			const FVector CorridorStart = FVector(((RoomA_X1 + RoomB_X2)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(((RoomA_X1 + RoomB_X2)/2), CorridorEndY - 100.0f, 0.0f);
+
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -------
@@ -310,7 +346,14 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_X1 < RoomB_X1 && RoomA_X2 > RoomB_X2)
 		{
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("CType: V3"));
+			const FVector CorridorStart = FVector((RoomB->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector((RoomB->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
+
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*    ---
@@ -322,16 +365,34 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else
 		{
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("CType: V4"));
+			const FVector CorridorStart = FVector((RoomA->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector((RoomA->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
+
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 	}
-	/*  -----                          -----
-	 * |  A  |  -----      /   -----  |  B  |
-	 *  -----  |  B  |        |  A  |  -----
-	 *          -----          -----
+	/*
+	 * Horizontal Corridor
 	 */
-	else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 < RoomB_Y1)
+	else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 > RoomB_Y1)
 	{
+		float CorridorStartX;
+		float CorridorEndX;
+
+		if (RoomA_X1 > RoomB_X1) //A is left of B. Corridors are build right to left bc Unreal :/
+			{
+			CorridorStartX = RoomB_X2;
+			CorridorEndX = RoomA_X1;
+			}
+		else //B is left of A
+			{
+			CorridorStartX = RoomA_X2;
+			CorridorEndX = RoomB_X1;
+			}
 
 		/*          -----
 		 *  -----  |  B  |
@@ -340,7 +401,14 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		if (RoomA_Y1 < RoomB_Y1 && RoomA_Y2 < RoomB_Y2)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("CType: H1"));
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y2 + RoomB_Y1)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y2 + RoomB_Y1)/2), 0.0f);
 
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -----
@@ -350,7 +418,14 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_Y1 > RoomB_Y1 && RoomA_Y2 > RoomB_Y2)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("CType: H2"));
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y1 + RoomB_Y2)/2), 0.0f);
 
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*  -----
@@ -361,7 +436,14 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 > RoomB_Y2)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("CType: H3"));
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomB_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomB_Y1 + RoomB_Y2)/2), 0.0f);
 
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 
 		/*          -----
@@ -372,24 +454,33 @@ void ADungeonGenerator::FindOverlap(FRoom* RoomA, FRoom* RoomB)
 		 */
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT("CType: H4"));
+			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, ((RoomA_Y1 + RoomA_Y2)/2) - 100.0f, 0.0f);
+			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, ((RoomA_Y1 + RoomA_Y2)/2), 0.0f);
 
+			Corridor->MinPos = CorridorStart;
+			Corridor->MaxPos = CorridorEnd;
+
+			FloorTiles.Append(SplitRoomIntoTiles(Corridor));
 		}
 	}
-	FVector CorridorMidpoint = FVector(0.0f, 0.0f, 0.0f);
+	UE_LOG(LogTemp, Warning, TEXT("Corridor from: %s to: %s"), *Corridor->MinPos.ToString(), *Corridor->MaxPos.ToString());
+	DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
 }
 
-void ADungeonGenerator::SplitIntoTiles()
+TArray<FVector> ADungeonGenerator::SplitRoomIntoTiles(FRoom* RoomToSplit)
 {
-	for (FRoom* iRoom : RoomsArray)
+	TArray<FVector> Tiles;
+
+	for (float y = RoomToSplit->MinPos.Y; y <= RoomToSplit->MaxPos.Y; y+=100.0f)
 	{
-		for (float y = iRoom->MinPos.Y; y < iRoom->MaxPos.Y; y+=100.0f)
+		for (float x = RoomToSplit->MinPos.X; x <= RoomToSplit->MaxPos.X; x+=100.0f)
 		{
-			for (float x = iRoom->MinPos.X; x < iRoom->MaxPos.X; x+=100.0f)
-			{
-				FloorTiles.Add(FVector(x, y, 0.0f));
-			}
+			Tiles.Add(FVector(x, y, 0.0f));
 		}
 	}
+
+	return Tiles;
 }
 
 void ADungeonGenerator::SpawnTiles()
