@@ -25,7 +25,18 @@ void ADungeonGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GenerateDungeon();
+}
 
+// Called every frame
+void ADungeonGenerator::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void ADungeonGenerator::GenerateDungeon()
+{
 	MapSize = 100.0f * MapScale * RoomCount;
 	Map = new FRoom;
 
@@ -46,12 +57,12 @@ void ADungeonGenerator::BeginPlay()
 	}
 	GenerateMST(RoomsArray);
 	SpawnTiles(FloorTiles);
-	// SpawnTiles(CorridorTiles);
 	if (WallGenerator)
 	{
 		WallGenerator->GenerateWalls(FloorTiles);
 	}
 	else UE_LOG(LogTemp, Warning, TEXT("No WallGenerator"));
+
 	// TempSpawnTiles();
 	// DebugFunction();
 
@@ -60,21 +71,6 @@ void ADungeonGenerator::BeginPlay()
 		APlayerCharacter* PlayerCharacter = GetWorld()->SpawnActor<APlayerCharacter>(Player, RoomsArray[0]->MidPoint + FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator);
 		PlayerCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;
 	}
-}
-
-// Called every frame
-void ADungeonGenerator::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void ADungeonGenerator::GenerateMap()
-{
-}
-
-void ADungeonGenerator::MakeRoom()
-{
 }
 
 void ADungeonGenerator::SplitIntoRooms(unsigned TimesToSplit)

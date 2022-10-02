@@ -48,9 +48,7 @@ public:
 	float MapScale;
 
 	TArray<FVector> FloorTiles;
-	TArray<FVector> CorridorTiles;
 	TArray<FRoom*> RoomsArray;
-	TArray<FVector> RoomCentres;
 
 	TArray<FRoomPair> ConnectedRooms;
 
@@ -71,8 +69,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void GenerateMap();
-	void MakeRoom();
+	void GenerateDungeon();
 	void SplitIntoRooms(unsigned TimesToSplit);
 	void BSP_SplitRoom_Vert(FRoom* RoomToSplit);
 	void BSP_SplitRoom_Hor(FRoom* RoomToSplit);
@@ -82,8 +79,9 @@ public:
 	void AddCorridors(FRoom* RoomA, FRoom* RoomB);
 	TArray<FVector> SplitRoomIntoTiles(FRoom* RoomToSplit);
 	void SpawnTiles(const TArray<FVector>& Tiles);
-	void TempSpawnTiles();
 	float RoundToHundred(float Value);
+
+	void TempSpawnTiles();
 	void DebugFunction();
 
 private:
