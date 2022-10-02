@@ -63,6 +63,9 @@ public:
 	AWallGenerator* WallGenerator;
 
 	UPROPERTY(EditAnywhere)
+	bool SpawnPlayer;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<APlayerCharacter> Player;
 
 	// Called every frame
