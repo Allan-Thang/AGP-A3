@@ -26,7 +26,9 @@ void ADungeonGenerator::BeginPlay()
 	Super::BeginPlay();
 
 	GenerateDungeon();
+	// DebugFunction();
 }
+
 
 // Called every frame
 void ADungeonGenerator::Tick(float DeltaTime)
@@ -295,7 +297,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 *   |  B  |
 		 *    -----
 		 */
-		if (RoomA_X1 < RoomB_X1 && RoomA_X2 < RoomB_X2)
+		if (RoomA_X1 <= RoomB_X1 && RoomA_X2 <= RoomB_X2)
 		{
 			const FVector CorridorStart = FVector(RoundToHundred((RoomA_X2 + RoomB_X1)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(RoundToHundred((RoomA_X2 + RoomB_X1)/2), CorridorEndY - 100.0f, 0.0f);
@@ -311,7 +313,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 * |  B  |
 		 *  -----
 		 */
-		else if (RoomA_X1 > RoomB_X2 && RoomA_X2 > RoomB_X2)
+		else if (RoomA_X1 >= RoomB_X1 && RoomA_X2 >= RoomB_X2)
 		{
 			const FVector CorridorStart = FVector(RoundToHundred((RoomA_X1 + RoomB_X2)/2) - 100.0f, CorridorStartY + 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(RoundToHundred((RoomA_X1 + RoomB_X2)/2), CorridorEndY - 100.0f, 0.0f);
@@ -327,7 +329,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 *   | B |
 		 *    ---
 		 */
-		else if (RoomA_X1 < RoomB_X1 && RoomA_X2 > RoomB_X2)
+		else if (RoomA_X1 <= RoomB_X1 && RoomA_X2 >= RoomB_X2)
 		{
 			const FVector CorridorStart = FVector(RoundToHundred(RoomB->MidPoint.X) - 100.0f, CorridorStartY + 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(RoundToHundred(RoomB->MidPoint.X), CorridorEndY - 100.0f, 0.0f);
@@ -362,13 +364,13 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 
 		if (RoomA_X1 > RoomB_X1) //A is left of B. Corridors are build right to left bc Unreal :/
 			{
-			CorridorStartX = RoomB_X2;
-			CorridorEndX = RoomA_X1;
+				CorridorStartX = RoomB_X2;
+				CorridorEndX = RoomA_X1;
 			}
 		else //B is left of A
 			{
-			CorridorStartX = RoomA_X2;
-			CorridorEndX = RoomB_X1;
+				CorridorStartX = RoomA_X2;
+				CorridorEndX = RoomB_X1;
 			}
 
 		/*          -----
@@ -376,7 +378,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 * |  A  |  -----
 		 *  -----
 		 */
-		if (RoomA_Y1 < RoomB_Y1 && RoomA_Y2 < RoomB_Y2)
+		if (RoomA_Y1 <= RoomB_Y1 && RoomA_Y2 <= RoomB_Y2)
 		{
 			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomA_Y2 + RoomB_Y1)/2) - 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomA_Y2 + RoomB_Y1)/2), 0.0f);
@@ -390,7 +392,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 *  -----  |  B  |
 		 *          -----
 		 */
-		else if (RoomA_Y1 > RoomB_Y1 && RoomA_Y2 > RoomB_Y2)
+		else if (RoomA_Y1 >= RoomB_Y1 && RoomA_Y2 >= RoomB_Y2)
 		{
 			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomA_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomA_Y1 + RoomB_Y2)/2), 0.0f);
@@ -405,7 +407,7 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		 * |     |  -----
 		 *  -----
 		 */
-		else if (RoomA_Y1 < RoomB_Y2 && RoomA_Y2 > RoomB_Y2)
+		else if (RoomA_Y1 <= RoomB_Y2 && RoomA_Y2 >= RoomB_Y2)
 		{
 			const FVector CorridorStart = FVector(CorridorStartX + 100.0f, RoundToHundred((RoomB_Y1 + RoomB_Y2)/2) - 100.0f, 0.0f);
 			const FVector CorridorEnd = FVector(CorridorEndX - 100.0f, RoundToHundred((RoomB_Y1 + RoomB_Y2)/2), 0.0f);
@@ -429,8 +431,60 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 			Corridor->MaxPos = CorridorEnd;
 		}
 	}
+	else // No Overlap
+	{
+		FRoom* Corridor2 = new FRoom;
+
+		FVector Corridor1Start;
+		FVector Corridor1End;
+
+		FVector Corridor2Start;
+		FVector Corridor2End;
+
+		if (RoomA_X1 > RoomB_X2 && RoomA_Y2 < RoomB_Y1) // B is Bottom-Right of A
+		{
+			Corridor1Start = FVector(RoomA_X1, RoomA_Y2 + 100.0f, 0.0f);
+			Corridor1End = FVector(RoomA_X1 + 100.0f, RoomB_Y1 + 100.0f, 0.0f);
+
+			Corridor2Start = FVector(RoomB_X2 + 100.0f, RoomB_Y1, 0.0f);
+			Corridor2End = FVector(RoomA_X1 - 100.0f, RoomB_Y1 + 100.0f, 0.0f);
+		}
+		else if (RoomA_X1 > RoomB_X2 && RoomA_Y1 > RoomB_Y2) // B is Bottom-Left of A
+		{
+			Corridor1Start = FVector(RoomB_X2 - 100.0f, RoomB_Y2 + 100.0f, 0.0f);
+			Corridor1End = FVector(RoomB_X2, RoomA_Y1 + 100.0f, 0.0f);
+
+			Corridor2Start = FVector(RoomB_X2 + 100.0f, RoomA_Y1, 0.0f);
+			Corridor2End = FVector(RoomA_X1 - 100.0f, RoomA_Y1 + 100.0f, 0.0f);
+		}
+		else if (RoomA_X2 < RoomB_X1 && RoomA_Y1 > RoomB_Y2) // B is Top-Left of A
+		{
+			Corridor1Start = FVector(RoomA_X2 - 100.0f, RoomB_Y2 - 100.0f, 0.0f);
+			Corridor1End = FVector(RoomB_X1 - 100.0f, RoomB_Y2, 0.0f);
+
+			Corridor2Start = FVector(RoomA_X2 - 100.0f, RoomB_Y2 + 100.0f, 0.0f);
+			Corridor2End = FVector(RoomA_X2, RoomA_Y1 - 100.0f, 0.0f);
+		}
+		else if (RoomA_X2 < RoomB_X1 && RoomA_Y2 < RoomB_Y1) // B is Top-Right of A
+		{
+			Corridor1Start = FVector(RoomA_X2 + 100.0f, RoomA_Y2 - 100.0f, 0.0f);
+			Corridor1End = FVector(RoomB_X1 + 100.0f, RoomA_Y2, 0.0f);
+
+			Corridor2Start = FVector(RoomB_X1, RoomA_Y2 + 100.0f, 0.0f);
+			Corridor2End = FVector(RoomB_X1 + 100.0f, RoomB_Y1 - 100.0f, 0.0f);
+		}
+
+		Corridor->MinPos = Corridor1Start;
+		Corridor->MaxPos = Corridor1End;
+
+		Corridor2->MinPos = Corridor2Start;
+		Corridor2->MaxPos = Corridor2End;
+
+		FloorTiles.Append(SplitRoomIntoTiles(Corridor2));
+		DrawDebugLine(GetWorld(), Corridor2->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor2->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
+	}
 	FloorTiles.Append(SplitRoomIntoTiles(Corridor));
-	// DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
+	DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
 }
 
 TArray<FVector> ADungeonGenerator::SplitRoomIntoTiles(FRoom* RoomToSplit)
