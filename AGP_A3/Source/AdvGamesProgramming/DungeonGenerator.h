@@ -66,6 +66,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<APlayerCharacter> Player;
 
+	UPROPERTY(EditAnywhere)
+	class AAIManager* AIManager;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

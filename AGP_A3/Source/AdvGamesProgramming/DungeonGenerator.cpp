@@ -3,6 +3,7 @@
 
 #include "DungeonGenerator.h"
 
+#include "AIManager.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -55,7 +56,13 @@ void ADungeonGenerator::GenerateDungeon()
 	TrimRooms();
 	for (FRoom* RoomToSplit : RoomsArray)
 	{
-		FloorTiles.Append(SplitRoomIntoTiles(RoomToSplit));
+		TArray<FVector> RoomTiles = SplitRoomIntoTiles(RoomToSplit);
+		FloorTiles.Append(RoomTiles);
+
+		if (AIManager)
+		{
+			AIManager->GenerateNodes(RoomTiles, RoomToSplit->Width, RoomToSplit->Height);
+		}
 	}
 	GenerateMST(RoomsArray);
 	SpawnTiles(FloorTiles);
@@ -481,10 +488,10 @@ void ADungeonGenerator::AddCorridors(FRoom* RoomA, FRoom* RoomB)
 		Corridor2->MaxPos = Corridor2End;
 
 		FloorTiles.Append(SplitRoomIntoTiles(Corridor2));
-		DrawDebugLine(GetWorld(), Corridor2->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor2->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
+		// DrawDebugLine(GetWorld(), Corridor2->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor2->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
 	}
 	FloorTiles.Append(SplitRoomIntoTiles(Corridor));
-	DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
+	// DrawDebugLine(GetWorld(), Corridor->MinPos + FVector(0.0f,0.0f, 100.0f), Corridor->MaxPos + FVector(0.0f,0.0f,100.0f), FColor::Cyan, true, -1, 0, 10);
 }
 
 TArray<FVector> ADungeonGenerator::SplitRoomIntoTiles(FRoom* RoomToSplit)
